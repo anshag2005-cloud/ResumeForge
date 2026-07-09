@@ -16,6 +16,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+// Request logger middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // Mount API routes (matching NEXT_PUBLIC_API_URL: http://localhost:5000/api/v1)
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/resumes', require('./routes/resumes'));
