@@ -7,7 +7,8 @@ const register = async (req, res) => {
     const { email, name, password } = req.body;
 
     if (global.dbMode === 'mock') {
-      let user = global.mockDB.users.find(u => u.email === email);
+      const lowerEmail = email.toLowerCase();
+      let user = global.mockDB.users.find(u => u.email.toLowerCase() === lowerEmail);
       if (user) {
         return res.status(400).json({ detail: 'A user with this email address already exists.' });
       }
@@ -17,7 +18,7 @@ const register = async (req, res) => {
 
       const newUser = {
         _id: 'mock_user_' + Date.now(),
-        email,
+        email: lowerEmail,
         name,
         password: hashedPassword,
         role: 'user',
@@ -95,7 +96,8 @@ const login = async (req, res) => {
     }
 
     if (global.dbMode === 'mock') {
-      const user = global.mockDB.users.find(u => u.email === loginEmail);
+      const lowerEmail = loginEmail.toLowerCase();
+      const user = global.mockDB.users.find(u => u.email.toLowerCase() === lowerEmail);
       if (!user) {
         return res.status(401).json({ detail: 'Incorrect email or password' });
       }
