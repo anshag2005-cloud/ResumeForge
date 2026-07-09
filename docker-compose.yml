@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  db:
+    image: mongo:latest
+    container_name: resumeforge-db
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  server:
+    build: ./server
+    container_name: resumeforge-server
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://db:27017/resumeforge
+      - SECRET_KEY=resumeforge_super_secret_jwt_key_1234567890
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - db
+
+  client:
+    build:
+      context: ./client
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+    container_name: resumeforge-client
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+
+volumes:
+  mongodb_data:
